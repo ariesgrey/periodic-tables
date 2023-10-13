@@ -75,8 +75,9 @@ function timeIsValid(req, res, next) {
 // Checks if 'people' property is a valid number input
 function peopleIsValid(req, res, next) {
 	const { people } = req.body.data;
+	const isNumber = Number.isInteger(people);
 	// Must be a number and greater than 0
-	if (Number.isInteger(people) && people > 0) {
+	if (isNumber && people > 0) {
 		return next();
 	}
 
