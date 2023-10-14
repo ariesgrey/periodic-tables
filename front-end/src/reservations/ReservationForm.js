@@ -1,6 +1,5 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { today } from "../utils/date-time";
 
 function ReservationForm({ formData, handleChange, handleSubmit }) {
 	const history = useHistory();
@@ -40,7 +39,6 @@ function ReservationForm({ formData, handleChange, handleSubmit }) {
 					type="text"
 					id="mobile_number"
 					name="mobile_number"
-					pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
 					placeholder="###-###-####"
 					required={true}
 					value={formData.mobile_number}
@@ -54,7 +52,6 @@ function ReservationForm({ formData, handleChange, handleSubmit }) {
 					type="date"
 					id="reservation_date"
 					name="reservation_date"
-					min={today()}
 					required={true}
 					value={formData.reservation_date}
 					onChange={handleChange}
@@ -89,10 +86,7 @@ function ReservationForm({ formData, handleChange, handleSubmit }) {
 				<button className="btn btn-primary" type="submit">
 					Submit
 				</button>
-				<button
-					className="btn btn-secondary"
-					type="button"
-					onClick={() => history.goBack()}>
+				<button className="btn btn-secondary" type="button" onClick={() => history.goBack()}>
 					Cancel
 				</button>
 			</div>

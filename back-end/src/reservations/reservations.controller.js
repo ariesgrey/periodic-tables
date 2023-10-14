@@ -42,19 +42,37 @@ function dateIsValid(req, res, next) {
 	const { reservation_date } = req.body.data;
 	// Convert YYYY-MM-DD format to ISO date format - so 'Date.parse()' works across all browsers
 	try {
-		const dateISO = new Date(reservation_date).toISOString();
+		const date = new Date(reservation_date);
+		const dateISO = date.toISOString();
 		if (dateISO && Date.parse(dateISO) > 0) {
 			return next();
 		} else {
-			// Invalid 'next()' within 'catch' block
 			throw new Error();
 		}
-	} catch {
+	} catch (error) {
 		next({
 			status: 400,
 			message: `Invalid field: 'reservation_date' must be a valid date.`,
 		});
 	}
+}
+
+// Checks if 'reservation_date' is a tuesday
+function notTuesday(req, res, next) {
+	const { reservation_date, reservation_time } = req.body.data;
+	// 'Date-time form' interpreted as local time
+	const reservationDate = new Date(
+		`${reservation_date}T${reservation_time.slice(0, 2)}:${reservation_time.slice(3)}`
+	);
+
+	if (reservationDate.getDay() !== 2) {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Invalid field: 'reservation_date' must not be a Tuesday - restaurant closed.`,
+	});
 }
 
 // Checks if 'reservation_time' is a valid time input
@@ -63,12 +81,42 @@ function timeIsValid(req, res, next) {
 	// Validate HH:MM time format
 	let regex = new RegExp("([01]?[0-9]|2[0-3]):([0-5][0-9])");
 	if (regex.test(reservation_time)) {
+		// Check if within business hours
+		const earliestTime = 1030;
+		const latestTime = 2120;
+		const reservationTime = reservation_time.substring(0, 2) + reservation_time.substring(3);
+		if (reservationTime >= earliestTime && reservationTime <= latestTime) {
+			return next();
+		}
+	}
+
+	next({
+		status: 400,
+		message: `Invalid field: 'reservation_time' must be a valid time during business hours.`,
+	});
+}
+
+// Checks if 'reservation_date' and 'reservation_time' are not in the past
+function notInPast(req, res, next) {
+	const { reservation_date, reservation_time } = req.body.data;
+	// 'Date-time form' interpreted as local time
+	const reservationDate = new Date(
+		`${reservation_date}T${reservation_time.slice(0, 2)}:${reservation_time.slice(3)}`
+	);
+	const now = new Date(Date.now());
+	// Accomodate for daylight savings time
+	reservationDate.setTime(
+		reservationDate.getTime() - reservationDate.getTimezoneOffset() * 60 * 1000
+	);
+	now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+
+	if (reservationDate > now) {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Invalid field: 'reservation_time' must be a valid time.`,
+		message: `Reservation must be in the future.`,
 	});
 }
 
@@ -133,7 +181,9 @@ module.exports = {
 	create: [
 		hasProperties(requiredProperties),
 		dateIsValid,
+		notTuesday,
 		timeIsValid,
+		notInPast,
 		peopleIsValid,
 		asyncErrorBoundary(create),
 	],
