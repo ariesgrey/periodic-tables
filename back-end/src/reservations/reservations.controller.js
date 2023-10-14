@@ -3,6 +3,7 @@
  */
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+const hasProperties = require("../errors/hasProperties");
 
 /* --- VALIDATION MIDDLEWARE --- */
 
@@ -14,28 +15,6 @@ const requiredProperties = [
 	"reservation_time",
 	"people",
 ];
-
-// Checks if given reservation data has all required properties
-function hasProperties(properties) {
-	return function (req, res, next) {
-		const { data = {} } = req.body;
-		try {
-			properties.forEach((property) => {
-				// If a required property is missing or empty, throw error
-				if (!data[property] || data[property] === "") {
-					return next({
-						status: 400,
-						message: `A '${property}' property is required.`,
-					});
-				}
-			});
-
-			next();
-		} catch (error) {
-			next(error);
-		}
-	};
-}
 
 // Checks if 'reservation_date' property is a valid date input
 function dateIsValid(req, res, next) {
