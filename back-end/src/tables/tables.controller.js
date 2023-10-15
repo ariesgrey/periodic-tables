@@ -100,6 +100,19 @@ function tableIsFree(req, res, next) {
 	});
 }
 
+// Checks if a table if currently occupied
+function tableIsOccupied(req, res, next) {
+	const { status } = res.locals.table;
+	if (status === "Occupied") {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Table is not occupied.`,
+	});
+}
+
 /* --- ROUTES --- */
 
 // GET /tables - list tables by name
@@ -126,6 +139,18 @@ async function seat(req, res) {
 	res.json({ data: await service.seat(updatedTable) });
 }
 
+// DELETE /tables/:table_id/seat - set table status as 'Free' after reservation is finished
+async function finish(req, res) {
+	const { table } = res.locals;
+	const updatedTable = {
+		...table,
+		reservation_id: null,
+		status: "Free",
+	};
+
+	res.json({ data: await service.finish(updatedTable) });
+}
+
 module.exports = {
 	list: asyncErrorBoundary(list),
 	create: [
@@ -142,4 +167,5 @@ module.exports = {
 		tableIsFree,
 		asyncErrorBoundary(seat),
 	],
+	finish: [asyncErrorBoundary(tableExists), tableIsOccupied, asyncErrorBoundary(finish)],
 };
