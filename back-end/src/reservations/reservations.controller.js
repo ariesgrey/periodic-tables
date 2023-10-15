@@ -116,8 +116,8 @@ function peopleIsValid(req, res, next) {
 
 // Checks if a reservation exists with the given id
 async function reservationExists(req, res, next) {
-	const { reservationId } = req.params;
-	const data = await service.read(reservationId);
+	const { reservation_id } = req.params;
+	const data = await service.read(reservation_id);
 	if (data) {
 		// Save reservation data in locals if exists
 		res.locals.reservation = data;
@@ -126,7 +126,50 @@ async function reservationExists(req, res, next) {
 
 	next({
 		status: 404,
-		message: `Reservation ID '${reservationId}' does not exist.`,
+		message: `Reservation ID '${reservation_id}' does not exist.`,
+	});
+}
+
+// Checks if 'status' is a valid input
+function statusIsValid(req, res, next) {
+	const { status } = req.body.data;
+	const validStatus = ["booked", "seated", "finished"];
+	if (validStatus.includes(status)) {
+		// Save status in locals if valid
+		res.locals.status = status;
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Invalid status input: ${status}. Status options: ${validStatus.join(", ")}.`,
+	});
+}
+
+// Checks if new reservation data has 'status' - if so, must be set to 'booked'
+function statusIsBooked(req, res, next) {
+	const { status } = req.body.data;
+	// If status isn't included, or if it is and is set to 'Booked'
+	if (!status || (status && status === "booked")) {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Status cannot be set to ${status} for a new reservation.`,
+	});
+}
+
+// Checks if 'status' being updated is set to 'finished' - cannot update
+function statusIsNotFinished(req, res, next) {
+	const { reservation } = res.locals;
+	if (reservation.status !== "finished") {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `A finished reservation cannot be updated.`,
 	});
 }
 
@@ -138,10 +181,18 @@ async function list(req, res) {
 	const { date } = req.query;
 	// Default date to current day if none provided in query
 	if (!date) {
-		date = new Date();
+		date = new Date(Date.now());
+		// Accomodate for daylight savings
+		date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
 	}
 
-	res.json({ data: await service.list(date) });
+	const reservations = await service.list(date);
+	// Filter out 'finished' reservations
+	const activeReservations = reservations.filter(
+		(reservation) => reservation.status !== "finished"
+	);
+
+	res.json({ data: activeReservations });
 }
 
 // POST /reservations/new - add new reservation
@@ -150,9 +201,20 @@ async function create(req, res) {
 	res.status(201).json({ data: reservation });
 }
 
-// GET /reservations/:reservationId - returns reservation by given id
+// GET /reservations/:reservation_id - returns reservation by given id
 function read(req, res) {
 	res.json({ data: res.locals.reservation });
+}
+
+// PUT /reservations/:reservation_id/status - updates status of existing reservation
+async function updateStatus(req, res) {
+	const { reservation, status } = res.locals;
+	const updatedReservationData = {
+		...reservation,
+		status: status,
+	};
+	const updatedReservation = await service.update(updatedReservationData);
+	res.json({ data: updatedReservation });
 }
 
 module.exports = {
@@ -164,7 +226,15 @@ module.exports = {
 		timeIsValid,
 		notInPast,
 		peopleIsValid,
+		statusIsBooked,
 		asyncErrorBoundary(create),
 	],
 	read: [asyncErrorBoundary(reservationExists), read],
+	updateStatus: [
+		hasProperties(["status"]),
+		asyncErrorBoundary(reservationExists),
+		statusIsValid,
+		statusIsNotFinished,
+		asyncErrorBoundary(updateStatus),
+	],
 };
