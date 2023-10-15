@@ -30,9 +30,19 @@ function seat(updatedTable) {
 		.then((returnedRecords) => returnedRecords[0]);
 }
 
+// Sets an occupied table to 'Free' after reservation is finished
+function finish(updatedTable) {
+	return knex("tables")
+		.select("*")
+		.where({ table_id: updatedTable.table_id })
+		.update(updatedTable, "*")
+		.then((returnedRecords) => returnedRecords[0]);
+}
+
 module.exports = {
 	list,
 	create,
 	read,
 	seat,
+	finish,
 };
