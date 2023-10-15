@@ -7,6 +7,7 @@ function TableList({ tables }) {
 			<div className="col" key={table.table_id}>
 				<Table
 					key={table.table_id}
+					table={table}
 					table_name={table.table_name}
 					capacity={table.capacity}
 					status={table.status}

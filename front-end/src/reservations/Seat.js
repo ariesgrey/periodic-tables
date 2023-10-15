@@ -79,7 +79,7 @@ function Seat() {
 			// PUT updated reservation info
 			await seatReservation(reservation_id, formData, abortController.signal);
 			// Display dashboard after submitted
-			history.push(`/dashboard?date=${formData.reservation_date}`);
+			history.push(`/dashboard`);
 		} catch (error) {
 			setSeatError([error.message]);
 		}

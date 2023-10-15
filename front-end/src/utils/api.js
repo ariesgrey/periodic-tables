@@ -149,3 +149,24 @@ export async function createTable(table, signal) {
 	};
 	return await fetchJson(url, options, {});
 }
+
+/**
+ * Saves updated table to the database when a reservation is finished.
+ *
+ * @param table
+ *  the table being made available
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to the updated table.
+ */
+export async function finishTable(table, signal) {
+	const { table_id } = table;
+	const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+	const options = {
+		method: "DELETE",
+		headers,
+		signal,
+	};
+	return await fetchJson(url, options, {});
+}
