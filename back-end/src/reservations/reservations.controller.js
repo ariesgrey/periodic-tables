@@ -173,26 +173,37 @@ function statusIsNotFinished(req, res, next) {
 	});
 }
 
+// Checks for date or phone number in request query, finds matching reservations
+async function dateOrPhoneQuery(req, res, next) {
+	const { date, mobile_number } = req.query;
+	let reservationsList;
+
+	// If phone number query, use 'search' with phone number
+	if (mobile_number) {
+		reservationsList = await service.search(mobile_number);
+		res.locals.reservationsList = reservationsList;
+	} else {
+		// If no date query, default to current date
+		if (!date) {
+			date = new Date(Date.now());
+			// Accomodate for daylight savings
+			date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+		}
+
+		const reservations = await service.list(date);
+		// Filter out 'finished' reservations
+		reservationsList = reservations.filter((reservation) => reservation.status !== "finished");
+		res.locals.reservationsList = reservationsList;
+	}
+
+	next();
+}
+
 /* --- ROUTES --- */
 
 // GET /reservations - list reservations by date
-async function list(req, res) {
-	// Get date from request query
-	const { date } = req.query;
-	// Default date to current day if none provided in query
-	if (!date) {
-		date = new Date(Date.now());
-		// Accomodate for daylight savings
-		date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
-	}
-
-	const reservations = await service.list(date);
-	// Filter out 'finished' reservations
-	const activeReservations = reservations.filter(
-		(reservation) => reservation.status !== "finished"
-	);
-
-	res.json({ data: activeReservations });
+function list(req, res) {
+	res.json({ data: res.locals.reservationsList });
 }
 
 // POST /reservations/new - add new reservation
@@ -218,7 +229,7 @@ async function updateStatus(req, res) {
 }
 
 module.exports = {
-	list: asyncErrorBoundary(list),
+	list: [asyncErrorBoundary(dateOrPhoneQuery), list],
 	create: [
 		hasProperties(requiredProperties),
 		dateIsValid,
