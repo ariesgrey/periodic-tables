@@ -113,6 +113,19 @@ function tableIsOccupied(req, res, next) {
 	});
 }
 
+// Checks if a reservation's 'status' is already 'seated'
+function reservationIsNotSeated(req, res, next) {
+	const { reservation } = res.locals;
+	if (reservation.status !== "seated") {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Reservation is already seated.`,
+	});
+}
+
 /* --- ROUTES --- */
 
 // GET /tables - list tables by name
@@ -128,27 +141,42 @@ async function create(req, res) {
 
 // PUT /tables/:table_id/seat - seat a reservation at a table
 async function seat(req, res) {
-	const { table } = res.locals;
-	const { reservation_id } = res.locals.reservation;
-	const updatedTable = {
+	const { table, reservation } = res.locals;
+	const updatedTableData = {
 		...table,
-		reservation_id: reservation_id,
+		reservation_id: reservation.reservation_id,
 		status: "Occupied",
 	};
+	const updatedTable = await service.seat(updatedTableData);
 
-	res.json({ data: await service.seat(updatedTable) });
+	// Update reservation status to 'seated'
+	const updatedReservationData = {
+		...reservation,
+		status: "seated",
+	};
+	await reservationService.update(updatedReservationData);
+	res.json({ data: updatedTable });
 }
 
 // DELETE /tables/:table_id/seat - set table status as 'Free' after reservation is finished
 async function finish(req, res) {
 	const { table } = res.locals;
-	const updatedTable = {
+	const updatedTableData = {
 		...table,
 		reservation_id: null,
 		status: "Free",
 	};
+	const updatedTable = await service.finish(updatedTableData);
 
-	res.json({ data: await service.finish(updatedTable) });
+	// Set reservation status to 'finished'
+	const reservation = await reservationService.read(table.reservation_id);
+	const updatedReservationData = {
+		...reservation,
+		status: "finished",
+	};
+	await reservationService.update(updatedReservationData);
+
+	res.json({ data: updatedTable });
 }
 
 module.exports = {
@@ -163,6 +191,7 @@ module.exports = {
 		hasProperties(requiredPropertiesUpdate),
 		asyncErrorBoundary(tableExists),
 		asyncErrorBoundary(reservationExists),
+		reservationIsNotSeated,
 		tableHasCapacity,
 		tableIsFree,
 		asyncErrorBoundary(seat),
