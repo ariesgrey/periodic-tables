@@ -6,6 +6,7 @@ import Dashboard from "../dashboard/Dashboard";
 import NewReservation from "../reservations/NewReservation";
 import Seat from "../reservations/Seat";
 import NewTable from "../tables/NewTable";
+import Search from "../search/Search";
 import NotFound from "./NotFound";
 
 /**
@@ -35,6 +36,9 @@ function Routes() {
 			</Route>
 			<Route path="/tables/new">
 				<NewTable />
+			</Route>
+			<Route path="/search">
+				<Search />
 			</Route>
 			<Route>
 				<NotFound />

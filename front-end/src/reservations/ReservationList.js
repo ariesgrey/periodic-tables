@@ -15,17 +15,7 @@ function ReservationList({ reservations }) {
 
 		return (
 			<div className="col-6 col-md-4" key={reservation.reservation_id}>
-				<Reservation
-					reservation={reservation}
-					reservation_id={reservation.reservation_id}
-					first_name={reservation.first_name}
-					last_name={reservation.last_name}
-					mobile_number={reservation.mobile_number}
-					reservation_date={reservation.reservation_date}
-					reservation_time={formattedTime}
-					people={reservation.people}
-					status={reservation.status}
-				/>
+				<Reservation reservation={reservation} />
 			</div>
 		);
 	});
