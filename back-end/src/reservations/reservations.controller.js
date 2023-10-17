@@ -133,7 +133,7 @@ async function reservationExists(req, res, next) {
 // Checks if 'status' is a valid input
 function statusIsValid(req, res, next) {
 	const { status } = req.body.data;
-	const validStatus = ["booked", "seated", "finished"];
+	const validStatus = ["booked", "seated", "finished", "cancelled"];
 	if (validStatus.includes(status)) {
 		// Save status in locals if valid
 		res.locals.status = status;
@@ -217,6 +217,18 @@ function read(req, res) {
 	res.json({ data: res.locals.reservation });
 }
 
+// PUT /reservations/:reservation_id - updates an existing reservation
+async function updateReservation(req, res) {
+	const { reservation } = res.locals;
+	const { data } = req.body;
+	const updatedReservationData = {
+		...reservation,
+		...data,
+	};
+	const updatedReservation = await service.update(updatedReservationData);
+	res.json({ data: updatedReservation });
+}
+
 // PUT /reservations/:reservation_id/status - updates status of existing reservation
 async function updateStatus(req, res) {
 	const { reservation, status } = res.locals;
@@ -247,5 +259,16 @@ module.exports = {
 		statusIsValid,
 		statusIsNotFinished,
 		asyncErrorBoundary(updateStatus),
+	],
+	updateReservation: [
+		asyncErrorBoundary(reservationExists),
+		hasProperties(requiredProperties),
+		dateIsValid,
+		notTuesday,
+		timeIsValid,
+		notInPast,
+		peopleIsValid,
+		statusIsValid,
+		asyncErrorBoundary(updateReservation),
 	],
 };
