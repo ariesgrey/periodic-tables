@@ -1,10 +1,12 @@
 const knex = require("../db/connection");
 
-// Returns reservations for a given date, ordered by time
+// Returns active reservations for a given date, ordered by time
 function list(date) {
 	return knex("reservations")
 		.select("*")
 		.where({ reservation_date: date })
+		.whereNot({ status: "finished" })
+		.andWhereNot({ status: "cancelled" })
 		.orderBy("reservation_time");
 }
 
