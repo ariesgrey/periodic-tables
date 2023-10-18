@@ -65,6 +65,21 @@ export async function listReservations(params, signal) {
 }
 
 /**
+ * Retrieves all existing reservations matching a given phone number.
+ *
+ * @param mobile_number
+ *  the phone number to match
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to a possibly empty array of matching reservations saved in the database.
+ */
+export async function searchByPhone(mobile_number, signal) {
+	const url = `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`;
+	return await fetchJson(url, { signal });
+}
+
+/**
  * Saves new reservation to the database.
  *
  * @param reservation
@@ -120,8 +135,52 @@ export async function seatReservation(reservation_id, table, signal) {
 }
 
 /**
- * Retrieves all existing tables.
+ * Updates an existing reservation.
+ *
+ * @param reservation
+ *  the updated reservation data
+ * @param signal
+ *  optional AbortController.signal
  * @returns {Promise<[reservation]>}
+ *  a promise that resolves to the updated reservation.
+ */
+export async function updateReservation(reservation, signal) {
+	const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}`;
+	const options = {
+		method: "PUT",
+		headers,
+		body: JSON.stringify({ data: reservation }),
+		signal,
+	};
+	return await fetchJson(url, options, {});
+}
+
+/**
+ * Updates an existing reservation's 'status' property.
+ *
+ * @param reservation_id
+ *  the id of the reservation to update
+ * @param status
+ * 	the new status property
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to the updated reservation.
+ */
+export async function updateReservationStatus(reservation_id, status, signal) {
+	const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+	const options = {
+		method: "PUT",
+		headers,
+		body: JSON.stringify({ data: { status: status } }),
+		signal,
+	};
+	return await fetchJson(url, options, {});
+}
+
+/**
+ * Retrieves all existing tables.
+ * @returns {Promise<[table]>}
  *  a promise that resolves to a possibly empty array of tables saved in the database.
  */
 export async function listTables(signal) {
@@ -136,7 +195,7 @@ export async function listTables(signal) {
  *  the table to save, which must not have an `id` property
  * @param signal
  *  optional AbortController.signal
- * @returns {Promise<[reservation]>}
+ * @returns {Promise<[table]>}
  *  a promise that resolves to the saved table, which will now have an `id` property.
  */
 export async function createTable(table, signal) {
@@ -157,7 +216,7 @@ export async function createTable(table, signal) {
  *  the table being made available
  * @param signal
  *  optional AbortController.signal
- * @returns {Promise<[reservation]>}
+ * @returns {Promise<[table]>}
  *  a promise that resolves to the updated table.
  */
 export async function finishTable(table, signal) {
@@ -169,9 +228,4 @@ export async function finishTable(table, signal) {
 		signal,
 	};
 	return await fetchJson(url, options, {});
-}
-
-export async function searchByPhone(mobile_number, signal) {
-	const url = `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`;
-	return await fetchJson(url, { signal });
 }
