@@ -2,17 +2,20 @@
  * List handler for table resources
  */
 const service = require("./tables.service");
-const reservationService = require("../reservations/reservations.service");
+const reservationsService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
+const hasOnlyValidProperties = require("../errors/hasOnlyValidProperties");
 
 /* --- VALIDATION MIDDLEWARE --- */
 
-const requiredPropertiesCreate = ["table_name", "capacity"];
+// Required properties for creating table
+const REQUIRED_PROPERTIES = ["table_name", "capacity"];
 
-const requiredPropertiesUpdate = ["reservation_id"];
+// Valid properties for creating table
+const VALID_PROPERTIES = [...REQUIRED_PROPERTIES, "status", "reservation_id"];
 
-// Checks if 'table_name' property is a valid input
+// Checks if `table_name` property is a valid input
 function nameIsValid(req, res, next) {
 	const { table_name } = req.body.data;
 	// Must be at least 2 characters
@@ -22,11 +25,11 @@ function nameIsValid(req, res, next) {
 
 	next({
 		status: 400,
-		message: `Invalid field: 'table_name' must be at least 2 characters.`,
+		message: `Invalid 'table_name' input: "${table_name}". Must be at least 2 characters.`,
 	});
 }
 
-// Checks if 'capacity' property is a valid number input
+// Checks if `capacity` property is a valid number input
 function capacityIsValid(req, res, next) {
 	const { capacity } = req.body.data;
 	const isNumber = Number.isInteger(capacity);
@@ -37,11 +40,11 @@ function capacityIsValid(req, res, next) {
 
 	next({
 		status: 400,
-		message: `Invalid field: 'capacity' must be a number greater than 0.`,
+		message: `Invalid 'capacity' input: "${capacity}". Must be a number greater than 0.`,
 	});
 }
 
-// Checks if a table exists with the given id
+// Checks if table with given `table_id` exists
 async function tableExists(req, res, next) {
 	const { table_id } = req.params;
 	const data = await service.read(table_id);
@@ -53,14 +56,14 @@ async function tableExists(req, res, next) {
 
 	next({
 		status: 404,
-		message: `Table ID '${table_id}' does not exist.`,
+		message: `Invalid 'table_id' parameter: "${table_id}". Table ID does not exist.`,
 	});
 }
 
-// Checks if a reservation exists with the given id
+// Checks if reservation with given `reservation_id` exists
 async function reservationExists(req, res, next) {
 	const { reservation_id } = req.body.data;
-	const reservation = await reservationService.read(reservation_id);
+	const reservation = await reservationsService.read(reservation_id);
 	if (reservation) {
 		// Save reservation data in locals if exists
 		res.locals.reservation = reservation;
@@ -69,7 +72,7 @@ async function reservationExists(req, res, next) {
 
 	next({
 		status: 404,
-		message: `Reservation ID '${reservation_id}' does not exist.`,
+		message: `Invalid 'reservation_id' parameter: "${reservation_id}". Reservation ID does not exist.`,
 	});
 }
 
@@ -83,63 +86,63 @@ function tableHasCapacity(req, res, next) {
 
 	next({
 		status: 400,
-		message: `Table does not have sufficient capacity for reservation.`,
+		message: `Forbidden action: Selected table does not have sufficient capacity for this reservation.`,
 	});
 }
 
-// Checks if a table is currently free
+// Checks if a table's `status` is 'free'
 function tableIsFree(req, res, next) {
 	const { status } = res.locals.table;
-	if (status === "Free") {
+	if (status.toLowerCase() === "free") {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Table is already occupied.`,
+		message: `Forbidden action: Selected table is already occupied.`,
 	});
 }
 
-// Checks if a table if currently occupied
+// Checks if a table's `status` is 'occupied'
 function tableIsOccupied(req, res, next) {
 	const { status } = res.locals.table;
-	if (status === "Occupied") {
+	if (status.toLowerCase() === "occupied") {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Table is not occupied.`,
+		message: `Forbidden action: Selected table is not occupied.`,
 	});
 }
 
-// Checks if a reservation's 'status' is already 'seated'
+// Checks if a reservation's `status` is 'seated'
 function reservationIsNotSeated(req, res, next) {
 	const { reservation } = res.locals;
-	if (reservation.status !== "seated") {
+	if (reservation.status.toLowerCase() !== "seated") {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Reservation is already seated.`,
+		message: `Forbidden action: Selected reservation is already seated.`,
 	});
 }
 
 /* --- ROUTES --- */
 
-// GET /tables - list tables by name
+// GET /tables - lists all existing tables by name
 async function list(req, res) {
 	res.json({ data: await service.list() });
 }
 
-// POST /tables/new - add new table
+// POST /tables/new - creates new table
 async function create(req, res) {
 	const table = await service.create(req.body.data);
 	res.status(201).json({ data: table });
 }
 
-// PUT /tables/:table_id/seat - seat a reservation at a table
+// PUT /tables/:table_id/seat - seats a reservation at a table
 async function seat(req, res) {
 	const { table, reservation } = res.locals;
 	const updatedTableData = {
@@ -149,32 +152,32 @@ async function seat(req, res) {
 	};
 	const updatedTable = await service.seat(updatedTableData);
 
-	// Update reservation status to 'seated'
+	// Set reservation status to 'seated'
 	const updatedReservationData = {
 		...reservation,
 		status: "seated",
 	};
-	await reservationService.update(updatedReservationData);
+	await reservationsService.update(updatedReservationData);
 	res.json({ data: updatedTable });
 }
 
-// DELETE /tables/:table_id/seat - set table status as 'Free' after reservation is finished
+// DELETE /tables/:table_id/seat - finishes a reservation and opens up table
 async function finish(req, res) {
 	const { table } = res.locals;
 	const updatedTableData = {
 		...table,
 		reservation_id: null,
-		status: "Free",
+		status: "free",
 	};
 	const updatedTable = await service.finish(updatedTableData);
 
 	// Set reservation status to 'finished'
-	const reservation = await reservationService.read(table.reservation_id);
+	const reservation = await reservationsService.read(table.reservation_id);
 	const updatedReservationData = {
 		...reservation,
 		status: "finished",
 	};
-	await reservationService.update(updatedReservationData);
+	await reservationsService.update(updatedReservationData);
 
 	res.json({ data: updatedTable });
 }
@@ -182,13 +185,15 @@ async function finish(req, res) {
 module.exports = {
 	list: asyncErrorBoundary(list),
 	create: [
-		hasProperties(requiredPropertiesCreate),
+		hasProperties(REQUIRED_PROPERTIES),
+		hasOnlyValidProperties(VALID_PROPERTIES),
 		nameIsValid,
 		capacityIsValid,
 		asyncErrorBoundary(create),
 	],
 	seat: [
-		hasProperties(requiredPropertiesUpdate),
+		hasProperties(["reservation_id"]),
+		hasOnlyValidProperties(["reservation_id"]),
 		asyncErrorBoundary(tableExists),
 		asyncErrorBoundary(reservationExists),
 		reservationIsNotSeated,

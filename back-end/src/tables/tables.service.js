@@ -1,6 +1,6 @@
 const knex = require("../db/connection");
 
-// Returns all tables ordered by table name
+// Returns all existing tables, ordered by table name
 function list() {
 	return knex("tables").select("*").orderBy("table_name");
 }
@@ -10,10 +10,10 @@ function create(table) {
 	return knex("tables")
 		.insert(table)
 		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
+		.then((returnedRecords) => returnedRecords[0]);
 }
 
-// Returns the table matching a given id - helper only
+// Returns the table matching a given ID - helper only
 function read(tableId) {
 	return knex("tables")
 		.select("*")
@@ -21,7 +21,7 @@ function read(tableId) {
 		.then((returnedRecords) => returnedRecords[0]);
 }
 
-// Seats a reservation at a table
+// Seats a reservation at a table - sets `reservation_id` and updates `status` to 'Occupied'
 function seat(updatedTable) {
 	return knex("tables")
 		.select("*")
@@ -30,7 +30,7 @@ function seat(updatedTable) {
 		.then((returnedRecords) => returnedRecords[0]);
 }
 
-// Sets an occupied table to 'Free' after reservation is finished
+// Finishes a reservation at a table - sets `reservation_id` to null and updates `status` to 'Free'
 function finish(updatedTable) {
 	return knex("tables")
 		.select("*")

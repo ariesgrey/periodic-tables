@@ -1,6 +1,6 @@
 const knex = require("../db/connection");
 
-// Returns active reservations for a given date, ordered by time
+// Returns all active reservations for a given date, ordered by time
 function list(date) {
 	return knex("reservations")
 		.select("*")
@@ -15,10 +15,10 @@ function create(reservation) {
 	return knex("reservations")
 		.insert(reservation)
 		.returning("*")
-		.then((createdRecords) => createdRecords[0]);
+		.then((returnedRecords) => returnedRecords[0]);
 }
 
-// Returns the reservation matching a given id
+// Returns the reservation matching a given ID
 function read(reservationId) {
 	return knex("reservations")
 		.select("*")

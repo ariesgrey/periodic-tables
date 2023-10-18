@@ -9,7 +9,7 @@ function hasProperties(properties) {
 				if (!data[property] || data[property] === "") {
 					return next({
 						status: 400,
-						message: `A '${property}' property is required.`,
+						message: `Missing input: "${property}" property is required.`,
 					});
 				}
 			});
