@@ -7,6 +7,8 @@ import { previous, today, next } from "../utils/date-time";
 import ReservationList from "../reservations/ReservationList";
 import TableList from "../tables/TableList";
 
+import "../App.css";
+
 /**
  * Defines the dashboard page.
  * @param date
@@ -19,6 +21,8 @@ function Dashboard({ date }) {
 	if (dateQuery) {
 		date = dateQuery;
 	}
+
+	const dateString = new Date(date).toDateString();
 
 	const [reservations, setReservations] = useState([]);
 	const [tables, setTables] = useState([]);
@@ -62,36 +66,29 @@ function Dashboard({ date }) {
 
 	return (
 		<main>
-			<div className="container">
+			<div className="container ms-2 mt-3 pt-2">
 				<div className="row">
-					<div className="col">
-						<h1>Dashboard</h1>
-					</div>
-				</div>
-				<div className="row mb-1">
-					<div className="col d-flex flex-row">
-						<h4>Reservations for {date}</h4>
-						<div className="ml-3">
-							<Link to={`/dashboard?date=${previous(date)}`}>
-								<button className="btn btn-secondary btn-sm mx-1" type="button">
-									Prev
-								</button>
-							</Link>
-							<Link to={`/dashboard?date=${today()}`}>
-								<button className="btn btn-secondary btn-sm mx-1" type="button">
-									Today
-								</button>
-							</Link>
-							<Link to={`/dashboard?date=${next(date)}`}>
-								<button className="btn btn-secondary btn-sm mx-1" type="button">
-									Next
-								</button>
-							</Link>
-						</div>
+					<div className="col text-center">
+						<h3 className="sub-header-font fw-bold">{dateString}</h3>
+						<Link to={`/dashboard?date=${previous(date)}`}>
+							<button className="btn btn-secondary btn-sm mx-1" type="button">
+								Prev
+							</button>
+						</Link>
+						<Link to={`/dashboard?date=${today()}`}>
+							<button className="btn btn-secondary btn-sm mx-1" type="button">
+								Today
+							</button>
+						</Link>
+						<Link to={`/dashboard?date=${next(date)}`}>
+							<button className="btn btn-secondary btn-sm mx-1" type="button">
+								Next
+							</button>
+						</Link>
 					</div>
 				</div>
 				<ErrorAlert error={dashboardError} />
-				<div className="row mb-3">
+				<div className="row my-4">
 					<div className="col">
 						<ReservationList reservations={reservations} />
 					</div>

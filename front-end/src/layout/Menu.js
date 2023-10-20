@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-import "./Menu.css";
+import "../App.css";
 
 /**
  * Defines the menu for this application.
@@ -21,34 +21,62 @@ function Menu() {
 		window.addEventListener("resize", handleResize);
 	});
 
+	// Use location to set active nav link
+	const location = useLocation();
+	// Returns 'true' if page name matches current location pathname, 'false' otherwise
+	function isActive(path) {
+		if (location.pathname === path) {
+			return "page";
+		} else {
+			return null;
+		}
+	}
+
 	return (
 		<nav className="navbar bg-dark align-items-start ps-1">
 			<div className="container-fluid">
-				<Link className="navbar-brand text-light py-2" to="/">
+				<Link className="navbar-brand text-light pt-3 pb-2" to="/">
 					Periodic Tables
 				</Link>
-				<ul className="navbar-nav d-flex ps-2">
-					<li className="nav-item py-1">
+				{screenWidth < 768 ? null : <hr className="border border-light" style={{ width: "96%" }} />}
+				<ul className="navbar-nav d-flex ps-1">
+					<li className="nav-item my-2" aria-current={isActive("/dashboard")}>
 						<Link className="nav-link text-light" to="/dashboard">
-							<i className="bi bi-grid-1x2"></i>
+							{isActive("/dashboard") ? (
+								<i className="bi bi-grid-1x2-fill icon-right-margin"></i>
+							) : (
+								<i className="bi bi-grid-1x2 icon-right-margin"></i>
+							)}
 							{screenWidth < 768 ? null : "Dashboard"}
 						</Link>
 					</li>
-					<li className="nav-item py-1">
+					<li className="nav-item my-2" aria-current={isActive("/search")}>
 						<Link className="nav-link text-light" to="/search">
-							<i className="bi bi-search"></i>
+							{isActive("/search") ? (
+								<i className="bi bi-search-heart-fill icon-right-margin"></i>
+							) : (
+								<i className="bi bi-search icon-right-margin"></i>
+							)}
 							{screenWidth < 768 ? null : "Search"}
 						</Link>
 					</li>
-					<li className="nav-item py-1">
+					<li className="nav-item my-2" aria-current={isActive("/reservations/new")}>
 						<Link className="nav-link text-light" to="/reservations/new">
-							<i className="bi bi-calendar-plus"></i>
+							{isActive("/reservations/new") ? (
+								<i className="bi bi-calendar-plus-fill icon-right-margin"></i>
+							) : (
+								<i className="bi bi-calendar-plus icon-right-margin"></i>
+							)}
 							{screenWidth < 768 ? null : "New Reservation"}
 						</Link>
 					</li>
-					<li className="nav-item py-1">
+					<li className="nav-item my-2" aria-current={isActive("/tables/new")}>
 						<Link className="nav-link text-light" to="/tables/new">
-							<i className="bi bi-plus-square-dotted"></i>
+							{isActive("/tables/new") ? (
+								<i className="bi bi-plus-square-fill icon-right-margin"></i>
+							) : (
+								<i className="bi bi-plus-square-dotted icon-right-margin"></i>
+							)}
 							{screenWidth < 768 ? null : "New Table"}
 						</Link>
 					</li>

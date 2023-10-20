@@ -9,9 +9,9 @@ import Routes from "./Routes";
  */
 function Layout() {
 	return (
-		<div className="container-fluid px-0">
-			<div className="row me-0">
-				<div className="col-md-2">
+		<div className="container-fluid">
+			<div className="row">
+				<div className="col-md-2 px-0">
 					<Menu />
 				</div>
 				<div className="col-md-10">

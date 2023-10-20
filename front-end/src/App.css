@@ -1,0 +1,84 @@
+/* Media query: for smaller screens, navbar on top */
+@media screen and (max-width: 767.98px) {
+  .navbar-nav {
+    flex-direction: row !important;
+  }
+
+  .bi {
+    margin: auto 1em;
+    padding-right: 0.5em;
+  }
+
+  [aria-current]:not([aria-current="false"]) {
+    background-color: #495057;
+    height: 40px;
+  }
+}
+
+/* Media query: for bigger screens, navbar on left */
+@media screen and (min-width: 768px) {
+  .navbar {
+    width: 220px;
+    min-height: 100%;
+  }
+
+  .nav-link {
+    transition: margin-left 0.25s 0.15s, padding-left 0.25s 0.15s, transform 0.25s 0.15s;
+  }
+
+  .nav-link:hover {
+    margin-left: 5px;
+    padding-left: 10px;
+    transform: scale(1.1);
+  }
+
+  [aria-current]:not([aria-current="false"]) {
+    background-color: #495057;
+    margin-left: 5px;
+    padding-left: 10px;
+    width: 195px;
+    font-weight: bold;
+  }
+
+  .reservation-card {
+    .card-title {
+      font-size: 1.1em;
+    }
+    .card-subtitle {
+      font-size: 0.9em;
+    }
+    .card-text {
+      font-size: 0.9em;
+    }
+  
+    .btn-sm {
+      padding: 3px 6px;
+    }
+  }
+}
+
+.navbar-brand {
+  font-family: Yeseva One, serif;
+	font-size: 1.5em;
+}
+
+.nav-item {
+  font-family: Josefin Sans, sans-serif;
+	font-size: 1.1em;
+}
+
+.icon-right-margin {
+  margin-right: 0.5em;
+}
+
+.header-font {
+  font-family: Yeseva One, serif;
+}
+
+.sub-header-font {
+  font-family: Josefin Sans, sans-serif;
+}
+
+.main-font {
+  font-family: Lato, sans-serif;
+}
