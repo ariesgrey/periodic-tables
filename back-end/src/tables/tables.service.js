@@ -21,6 +21,14 @@ function read(tableId) {
 		.then((returnedRecords) => returnedRecords[0]);
 }
 
+// Returns the table matching a given `reservation_id`
+function readByReservation(reservationId) {
+	return knex("tables")
+		.select("*")
+		.where({ reservation_id: reservationId })
+		.then((returnedRecords) => returnedRecords[0]);
+}
+
 // Seats a reservation at a table - sets `reservation_id` and updates `status` to 'Occupied'
 function seat(updatedTable) {
 	return knex("tables")
@@ -43,6 +51,7 @@ module.exports = {
 	list,
 	create,
 	read,
+	readByReservation,
 	seat,
 	finish,
 };

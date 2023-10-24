@@ -102,6 +102,11 @@ export async function createReservation(reservation, signal) {
 
 /**
  * Retrieves an existing reservation by id.
+ *
+ * @param reservation_id
+ * 	id of the reservation to retrieve
+ * @param signal
+ *  optional AbortController.signal
  * @returns {Promise<[reservation]>}
  *  a promise that resolves to the reservation with the matching id.
  */
@@ -114,7 +119,7 @@ export async function readReservation(reservation_id, signal) {
  * Saves updated reservation to the database when seated at a table.
  *
  * @param reservation_id
- *  the reservation to be updated
+ *  id of the reservation to be updated
  * @param table
  *  the table the reservation is being seated at
  * @param signal
@@ -180,6 +185,9 @@ export async function updateReservationStatus(reservation_id, status, signal) {
 
 /**
  * Retrieves all existing tables.
+ *
+ * @param signal
+ *  optional AbortController.signal
  * @returns {Promise<[table]>}
  *  a promise that resolves to a possibly empty array of tables saved in the database.
  */
@@ -207,6 +215,21 @@ export async function createTable(table, signal) {
 		signal,
 	};
 	return await fetchJson(url, options, {});
+}
+
+/**
+ * Retrieves the table with the given reservation id.
+ *
+ * @param reservation_id
+ * 	reservation id to match
+ * @param signal
+ *  optional AbortController.signal
+ * @returns {Promise<[table]>}
+ *  a promise that resolves to the table with the matching reservation id.
+ */
+export async function readTableByReservation(reservation_id, signal) {
+	const url = `${API_BASE_URL}/tables/seated/${reservation_id}`;
+	return await fetchJson(url, { signal });
 }
 
 /**

@@ -60,9 +60,25 @@ async function tableExists(req, res, next) {
 	});
 }
 
-// Checks if reservation with given `reservation_id` exists
-async function reservationExists(req, res, next) {
+// Checks if reservation with given `reservation_id` exists - when `reservation_id` is in req.body
+async function reservationExistsBody(req, res, next) {
 	const { reservation_id } = req.body.data;
+	const reservation = await reservationsService.read(reservation_id);
+	if (reservation) {
+		// Save reservation data in locals if exists
+		res.locals.reservation = reservation;
+		return next();
+	}
+
+	next({
+		status: 404,
+		message: `Invalid 'reservation_id' parameter: "${reservation_id}". Reservation ID does not exist.`,
+	});
+}
+
+// Checks if reservation with given `reservation_id` exists - when `reservation_id` is in req.params
+async function reservationExistsParams(req, res, next) {
+	const { reservation_id } = req.params;
 	const reservation = await reservationsService.read(reservation_id);
 	if (reservation) {
 		// Save reservation data in locals if exists
@@ -78,45 +94,58 @@ async function reservationExists(req, res, next) {
 
 // Checks if a table has enough capacity for a reservation
 function tableHasCapacity(req, res, next) {
-	const { capacity } = res.locals.table;
-	const { people } = res.locals.reservation;
-	if (capacity >= people) {
+	const { table } = res.locals;
+	const { reservation } = res.locals;
+	if (table.capacity >= reservation.people) {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Forbidden action: Selected table does not have sufficient capacity for this reservation.`,
+		message: `Forbidden action: Table "${table.table_id}" does not have sufficient capacity for reservation "${reservation.reservation_id}".`,
 	});
 }
 
 // Checks if a table's `status` is 'free'
 function tableIsFree(req, res, next) {
-	const { status } = res.locals.table;
-	if (status.toLowerCase() === "free") {
+	const { table } = res.locals;
+	if (table.status.toLowerCase() === "free") {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Forbidden action: Selected table is already occupied.`,
+		message: `Forbidden action: Table "${table.table_id}" is already occupied.`,
 	});
 }
 
 // Checks if a table's `status` is 'occupied'
 function tableIsOccupied(req, res, next) {
-	const { status } = res.locals.table;
-	if (status.toLowerCase() === "occupied") {
+	const { table } = res.locals;
+	if (table.status.toLowerCase() === "occupied") {
 		return next();
 	}
 
 	next({
 		status: 400,
-		message: `Forbidden action: Selected table is not occupied.`,
+		message: `Forbidden action: Table "${table.table_id}" is not occupied.`,
 	});
 }
 
-// Checks if a reservation's `status` is 'seated'
+// Checks if a reservation's `status` is `seated`
+function reservationIsSeated(req, res, next) {
+	const { reservation } = res.locals;
+	if (reservation.status.toLowerCase() === "seated") {
+		return next();
+	}
+
+	next({
+		status: 400,
+		message: `Forbidden action: Reservation "${reservation.reservation_id}" is not seated.`,
+	});
+}
+
+// Checks if a reservation's `status` is NOT 'seated'
 function reservationIsNotSeated(req, res, next) {
 	const { reservation } = res.locals;
 	if (reservation.status.toLowerCase() !== "seated") {
@@ -125,7 +154,7 @@ function reservationIsNotSeated(req, res, next) {
 
 	next({
 		status: 400,
-		message: `Forbidden action: Selected reservation is already seated.`,
+		message: `Forbidden action: Reservation "${reservation.reservation_id}" is already seated.`,
 	});
 }
 
@@ -140,6 +169,12 @@ async function list(req, res) {
 async function create(req, res) {
 	const table = await service.create(req.body.data);
 	res.status(201).json({ data: table });
+}
+
+// GET /tables/:reservation_id - returns table with given `reservation_id`
+async function read(req, res) {
+	const { reservation_id } = res.locals.reservation;
+	res.json({ data: await service.readByReservation(reservation_id) });
 }
 
 // PUT /tables/:table_id/seat - seats a reservation at a table
@@ -191,11 +226,16 @@ module.exports = {
 		capacityIsValid,
 		asyncErrorBoundary(create),
 	],
+	read: [
+		asyncErrorBoundary(reservationExistsParams),
+		reservationIsSeated,
+		asyncErrorBoundary(read),
+	],
 	seat: [
 		hasProperties(["reservation_id"]),
 		hasOnlyValidProperties(["reservation_id"]),
 		asyncErrorBoundary(tableExists),
-		asyncErrorBoundary(reservationExists),
+		asyncErrorBoundary(reservationExistsBody),
 		reservationIsNotSeated,
 		tableHasCapacity,
 		tableIsFree,
