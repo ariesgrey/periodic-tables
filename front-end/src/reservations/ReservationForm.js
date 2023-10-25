@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { readReservation, updateReservation, createReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import { currentDateTime, formatAsDate, formatAsTime } from "../utils/date-time";
+import { formatAsDate, formatAsTime } from "../utils/date-time";
 
 function ReservationForm({ reservation_id }) {
 	// State set-up for form - start with empty form for new reservation
@@ -56,11 +56,12 @@ function ReservationForm({ reservation_id }) {
 		const time = data.reservation_time;
 		// 'Date-time form' interpreted as local time
 		const reservationDate = new Date(`${date}T${time.slice(0, 2)}:${time.slice(3)}`);
+		const now = new Date(Date.now());
 		// Accomodate for daylight savings time
 		reservationDate.setTime(
 			reservationDate.getTime() - reservationDate.getTimezoneOffset() * 60 * 1000
 		);
-		const now = currentDateTime();
+		now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
 
 		// Check if in the past
 		if (reservationDate < now) {
@@ -72,12 +73,10 @@ function ReservationForm({ reservation_id }) {
 		}
 		// Check if outside business hours
 		const earliestTime = 1030;
-		const latestTime = 2130;
+		const latestTime = 2120;
 		const reservationTime = time.substring(0, 2) + time.substring(3);
 		if (reservationTime < earliestTime || reservationTime > latestTime) {
-			errors.push(
-				`Reservation must be between ${earliestTime} and ${latestTime}. You put: ${reservationTime}`
-			);
+			errors.push(`Reservation must be between 10:30am and 9:30pm.`);
 		}
 
 		// Convert 'people' value from a string to a number
@@ -126,95 +125,127 @@ function ReservationForm({ reservation_id }) {
 	};
 
 	return (
-		<>
+		<fieldset className="border rounded bg-secondary-subtle reservation-form-fieldset">
 			<ErrorAlert error={reservationFormError} />
-			<form onSubmit={handleSubmit}>
-				<div className="form-group">
-					<label htmlFor="first_name">First Name</label>
-					<input
-						className="form-control"
-						type="text"
-						id="first_name"
-						name="first_name"
-						placeholder="First Name"
-						required={true}
-						value={formData.first_name}
-						onChange={handleChange}
-					/>
+			<form className="reservation-form sub-header-font" onSubmit={handleSubmit}>
+				<div className="row">
+					<label htmlFor="first_name" className="col-12 col-md-2 col-form-label col-form-label-lg">
+						First Name
+					</label>
+					<div className="col-12 col-md-10">
+						<input
+							className="form-control form-control-lg form-item"
+							type="text"
+							id="first_name"
+							name="first_name"
+							required={true}
+							value={formData.first_name}
+							onChange={handleChange}
+						/>
+					</div>
 				</div>
-				<div className="form-group">
-					<label htmlFor="last_name">Last Name</label>
-					<input
-						className="form-control"
-						type="text"
-						id="last_name"
-						name="last_name"
-						placeholder="Last Name"
-						required={true}
-						value={formData.last_name}
-						onChange={handleChange}
-					/>
+				<div className="row">
+					<label htmlFor="last_name" className="col-12 col-md-2 col-form-label col-form-label-lg">
+						Last Name
+					</label>
+					<div className="col-12 col-md-10">
+						<input
+							className="form-control form-control-lg form-item"
+							type="text"
+							id="last_name"
+							name="last_name"
+							required={true}
+							value={formData.last_name}
+							onChange={handleChange}
+						/>
+					</div>
 				</div>
-				<div className="form-group">
-					<label htmlFor="mobile_number">Phone Number</label>
-					<input
-						className="form-control"
-						type="text"
-						id="mobile_number"
-						name="mobile_number"
-						placeholder="###-###-####"
-						required={true}
-						value={formData.mobile_number}
-						onChange={handleChange}
-					/>
+				<div className="row">
+					<label
+						htmlFor="mobile_number"
+						className="col-12 col-md-2 col-form-label col-form-label-lg">
+						Phone
+					</label>
+					<div className="col-12 col-md-4">
+						<div className="input-group">
+							<span className="input-group-text form-item" id="mobile_number-addon">
+								+1
+							</span>
+							<input
+								className="form-control form-control-lg form-item"
+								type="text"
+								id="mobile_number"
+								name="mobile_number"
+								placeholder="###-###-####"
+								required={true}
+								value={formData.mobile_number}
+								onChange={handleChange}
+							/>
+						</div>
+					</div>
+					<label htmlFor="people" className="col-12 col-md-2 col-form-label col-form-label-lg">
+						Party Size
+					</label>
+					<div className="col-12 col-md-4">
+						<input
+							className="form-control form-control-lg form-item"
+							type="number"
+							id="people"
+							name="people"
+							min={1}
+							required={true}
+							value={formData.people}
+							onChange={handleChange}
+						/>
+					</div>
 				</div>
-				<div className="form-group">
-					<label htmlFor="reservation_date">Date</label>
-					<input
-						className="form-control"
-						type="date"
-						id="reservation_date"
-						name="reservation_date"
-						required={true}
-						value={formData.reservation_date}
-						onChange={handleChange}
-					/>
+				<div className="row">
+					<label
+						htmlFor="reservation_date"
+						className="col-12 col-md-2 col-form-label col-form-label-lg">
+						Date
+					</label>
+					<div className="col-12 col-md-4">
+						<input
+							className="form-control form-control-lg form-item"
+							type="date"
+							id="reservation_date"
+							name="reservation_date"
+							required={true}
+							value={formData.reservation_date}
+							onChange={handleChange}
+						/>
+					</div>
+					<label
+						htmlFor="reservation_time"
+						className="col-12 col-md-2 col-form-label col-form-label-lg">
+						Time
+					</label>
+					<div className="col-12 col-md-4">
+						<input
+							className="form-control form-control-lg form-item"
+							type="time"
+							id="reservation_time"
+							name="reservation_time"
+							required={true}
+							value={formData.reservation_time}
+							onChange={handleChange}
+						/>
+					</div>
 				</div>
-				<div className="form-group">
-					<label htmlFor="reservation_time">Time</label>
-					<input
-						className="form-control"
-						type="time"
-						id="reservation_time"
-						name="reservation_time"
-						required={true}
-						value={formData.reservation_time}
-						onChange={handleChange}
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="people">Number of People in Party</label>
-					<input
-						className="form-control"
-						type="number"
-						id="people"
-						name="people"
-						min={1}
-						required={true}
-						value={formData.people}
-						onChange={handleChange}
-					/>
-				</div>
-				<div>
-					<button className="btn btn-primary" type="submit">
-						Submit
-					</button>
-					<button className="btn btn-secondary" type="button" onClick={() => history.goBack()}>
+				<div className="d-flex justify-content-between">
+					<button
+						className="btn btn-lg btn-secondary"
+						type="button"
+						onClick={() => history.goBack()}>
 						Cancel
+					</button>
+					<button className="btn btn-lg btn-primary" type="submit">
+						Submit
 					</button>
 				</div>
 			</form>
-		</>
+		</fieldset>
 	);
 }
 

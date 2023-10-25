@@ -1,26 +1,43 @@
-/* --- Nav Bar Styling --- */
-/* Media query: for smaller screens, navbar on top */
+/* --- Media Queries --- */
+
+/* For smaller screens */
 @media screen and (max-width: 767.98px) {
+  /* Navbar - on top */
   .navbar-nav {
     flex-direction: row !important;
   }
 
   .navbar-icon {
-    margin: auto 1em;
-    padding-right: 1em;
+    margin: auto 16px;
+    padding-right: 8px;
   }
 
   [aria-current]:not([aria-current="false"]) {
     background-color: #495057;
     height: 40px;
   }
+
+  /* Reservation Form */
+  .reservation-form-fieldset {
+    margin: 20px 0px;
+  }
+
+  .reservation-form {
+    padding: 10px 20px;
+  }
+
+  .form-item {
+    margin-bottom: 20px;
+  }
 }
 
-/* Media query: for bigger screens, navbar on left */
+/* For bigger screens */
 @media screen and (min-width: 768px) {
+  /* Navbar - on left */
   .navbar {
     width: 220px;
     min-height: 100%;
+    padding-top: 20px;
   }
 
   .nav-link {
@@ -41,7 +58,23 @@
     width: 195px;
     font-weight: bold;
   }
+
+  /* Reservation Form */
+  .reservation-form-fieldset {
+    margin: 20px 30px;
+  }
+
+  .reservation-form {
+    padding: 40px 80px 30px 60px;
+  }
+
+  .form-item {
+    margin-bottom: 30px;
+  }
+
 }
+
+/* --- Navbar Styling --- */
 
 .navbar-brand {
   font-family: Yeseva One, serif;

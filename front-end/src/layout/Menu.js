@@ -35,7 +35,7 @@ function Menu() {
 	return (
 		<nav className="navbar bg-dark align-items-start ps-1">
 			<div className="container-fluid">
-				<Link className="navbar-brand text-light pt-3 pb-2" to="/">
+				<Link className="navbar-brand text-light pb-2" to="/">
 					Periodic Tables
 				</Link>
 				{screenWidth < 768 ? null : <hr className="border border-light" style={{ width: "96%" }} />}

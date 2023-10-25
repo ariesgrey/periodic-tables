@@ -70,7 +70,8 @@ function Dashboard({ date }) {
 			<div className="container ms-1 mt-3 pt-2">
 				<div className="row">
 					<div className="col text-center">
-						<h3 className="sub-header-font fw-bold">{dateString}</h3>
+						<p className="h3 sub-header-font fw-bold mb-1">Reservations for</p>
+						<h2 className="sub-header-font fw-bold">{dateString}</h2>
 						<Link to={`/dashboard?date=${previous(date)}`}>
 							<button className="btn btn-secondary btn-sm mx-1" type="button">
 								Prev
