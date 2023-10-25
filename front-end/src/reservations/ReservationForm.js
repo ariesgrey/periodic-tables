@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { readReservation, updateReservation, createReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import { formatAsDate, formatAsTime } from "../utils/date-time";
+import { currentDateTime, formatAsDate, formatAsTime } from "../utils/date-time";
 
 function ReservationForm({ reservation_id }) {
 	// State set-up for form - start with empty form for new reservation
@@ -56,12 +56,11 @@ function ReservationForm({ reservation_id }) {
 		const time = data.reservation_time;
 		// 'Date-time form' interpreted as local time
 		const reservationDate = new Date(`${date}T${time.slice(0, 2)}:${time.slice(3)}`);
-		const now = new Date(Date.now());
 		// Accomodate for daylight savings time
 		reservationDate.setTime(
 			reservationDate.getTime() - reservationDate.getTimezoneOffset() * 60 * 1000
 		);
-		now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+		const now = currentDateTime();
 
 		// Check if in the past
 		if (reservationDate < now) {
@@ -73,10 +72,12 @@ function ReservationForm({ reservation_id }) {
 		}
 		// Check if outside business hours
 		const earliestTime = 1030;
-		const latestTime = 2120;
+		const latestTime = 2130;
 		const reservationTime = time.substring(0, 2) + time.substring(3);
 		if (reservationTime < earliestTime || reservationTime > latestTime) {
-			errors.push(`Reservation must be between 10:30am and 9:30pm.`);
+			errors.push(
+				`Reservation must be between ${earliestTime} and ${latestTime}. You put: ${reservationTime}`
+			);
 		}
 
 		// Convert 'people' value from a string to a number

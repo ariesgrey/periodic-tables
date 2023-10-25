@@ -1,12 +1,13 @@
+/* --- Nav Bar Styling --- */
 /* Media query: for smaller screens, navbar on top */
 @media screen and (max-width: 767.98px) {
   .navbar-nav {
     flex-direction: row !important;
   }
 
-  .bi {
+  .navbar-icon {
     margin: auto 1em;
-    padding-right: 0.5em;
+    padding-right: 1em;
   }
 
   [aria-current]:not([aria-current="false"]) {
@@ -36,24 +37,9 @@
     background-color: #495057;
     margin-left: 5px;
     padding-left: 10px;
+    padding-top: 5px;
     width: 195px;
     font-weight: bold;
-  }
-
-  .reservation-card {
-    .card-title {
-      font-size: 1.1em;
-    }
-    .card-subtitle {
-      font-size: 0.9em;
-    }
-    .card-text {
-      font-size: 0.9em;
-    }
-  
-    .btn-sm {
-      padding: 3px 6px;
-    }
   }
 }
 
@@ -67,8 +53,52 @@
 	font-size: 1.1em;
 }
 
+/* --- Reservation + Table Styling --- */
+
+.reservation-card {
+  height: 121px;
+
+  .card-title {
+    font-size: 1.1em;
+  }
+
+  .card-subtitle, .card-text {
+    font-size: 0.9em;
+  }
+
+  .btn-sm {
+    padding: 2px 5px;
+  }
+
+  .id {
+    font-size: 0.8em;
+  }
+}
+
+.table-card {
+  height: 100px;
+
+  .card-title {
+    font-size: 1.1em;
+  }
+
+  .card-subtitle, .card-text {
+    font-size: 0.9em;
+  }
+
+  .btn-sm {
+    padding: 2px 5px;
+  }
+
+  .id {
+    font-size: 0.8em;
+  }
+}
+
+/* --- General Styling --- */
+
 .icon-right-margin {
-  margin-right: 0.5em;
+  margin-right: 8px;
 }
 
 .header-font {

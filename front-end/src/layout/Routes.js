@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Redirect, Route, Switch } from "react-router-dom";
-import { today } from "../utils/date-time";
+import { currentDateTime } from "../utils/date-time";
 import Dashboard from "../dashboard/Dashboard";
 import NewReservation from "../reservations/NewReservation";
 import EditReservation from "../reservations/EditReservation";
@@ -27,7 +27,7 @@ function Routes() {
 				<Redirect to={"/dashboard"} />
 			</Route>
 			<Route path="/dashboard">
-				<Dashboard date={today()} />
+				<Dashboard date={currentDateTime().slice(0, 10)} />
 			</Route>
 			<Route path="/reservations/new">
 				<NewReservation />

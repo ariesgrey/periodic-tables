@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { updateReservationStatus } from "../utils/api";
-import { today } from "../utils/date-time";
+import { readTableByReservation, updateReservationStatus } from "../utils/api";
+import { currentDateTime } from "../utils/date-time";
 import { formatAsTime } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
 
 import "../App.css";
 
 function Reservation({ reservation }) {
-	const [cancelError, setCancelError] = useState(null);
 	const {
 		reservation_id,
 		first_name,
@@ -18,6 +17,9 @@ function Reservation({ reservation }) {
 		people,
 		status,
 	} = reservation;
+
+	const [cancelError, setCancelError] = useState(null);
+	const [tableSeatedAt, setTableSeatedAt] = useState(null);
 
 	// 'Cancel' button handler
 	const handleCancel = async (event) => {
@@ -37,18 +39,17 @@ function Reservation({ reservation }) {
 	};
 
 	// Returns 'true' if reservation is due to arrive and not yet seated, 'false' otherwise
-	const isDue = () => {
+	function getIsDue() {
 		// If reservation is for current day...
-		if (reservation_date === today()) {
+		if (reservation_date === currentDateTime().slice(0, 10)) {
 			const reservationDate = new Date(
 				`${reservation_date}T${reservation_time.slice(0, 2)}:${reservation_time.slice(3)}`
 			);
-			const now = new Date(Date.now());
 			// Accomodate for daylight savings time
 			reservationDate.setTime(
 				reservationDate.getTime() - reservationDate.getTimezoneOffset() * 60 * 1000
 			);
-			now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+			const now = currentDateTime();
 
 			// If reservation is for current time or earlier and status is booked, return true
 			if (reservationDate <= now && status.toLowerCase() === "booked") {
@@ -57,21 +58,53 @@ function Reservation({ reservation }) {
 		}
 		// Return false otherwise
 		return false;
-	};
+	}
+	const isDue = getIsDue();
 
-	// Color coding based on status
-	const setStatusColor = () => {
+	// When reservation is seated, sets state as name of the table and returns true, otherwise returns false
+	function getTableSeatedAt() {
+		const abortController = new AbortController();
+
+		const getTable = async () => {
+			try {
+				const table = await readTableByReservation(reservation_id, abortController.signal);
+				setTableSeatedAt(table.table_name);
+			} catch (error) {
+				setCancelError([error.message]);
+			}
+		};
+
+		if (status.toLowerCase() === "seated") {
+			getTable();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Sets status text color based on its value
+	function setStatusColor() {
 		if (status.toLowerCase() === "booked") {
 			return "text-primary";
 		} else if (status.toLowerCase() === "seated") {
 			return "text-success";
 		} else if (status.toLowerCase() === "finished") {
 			return "text-dark";
-		} else {
+		} else if (status.toLowerCase() === "cancelled") {
 			return "text-danger";
 		}
-	};
+	}
 	const statusColor = setStatusColor();
+
+	// Sets background darker for cancelled appointments - for Search
+	function setCancelledBackground() {
+		if (status.toLowerCase() === "cancelled") {
+			return "bg-secondary-subtle";
+		} else {
+			return null;
+		}
+	}
+	const cancelledBackground = setCancelledBackground();
 
 	// Re-format reservation time
 	let formattedTime = formatAsTime(reservation_time);
@@ -83,20 +116,20 @@ function Reservation({ reservation }) {
 	}
 
 	return (
-		<div className="card reservation-card main-font position-relative">
+		<div className={`card reservation-card ${cancelledBackground} main-font shadow-sm mb-3`}>
 			<ErrorAlert error={cancelError} />
 			<div className="card-body p-2">
 				<div className="row pb-1">
 					<div className="col-6">
-						<h5 className="card-title mb-0">{`${last_name},`}</h5>
-						<h5 className="card-title">{`${first_name}`}</h5>
-						<h6 className="card-subtitle text-muted">{mobile_number}</h6>
+						<h5 className="card-title fw-bold text-truncate">{`${last_name}, ${first_name}`}</h5>
+						<h6 className="card-subtitle">{mobile_number}</h6>
+						<small className="id text-muted fst-italic">{`ID: ${reservation_id}`}</small>
 					</div>
 					<div className="col-6 d-flex flex-column">
 						<p className="card-text m-0">
 							<i className="bi bi-clock-fill text-muted icon-right-margin"></i>
 							{formattedTime}
-							{isDue() ? <span class="badge text-bg-warning ms-2">Due</span> : null}
+							{isDue ? <span className="badge text-bg-warning ms-2">Due</span> : null}
 						</p>
 						<p className="card-text m-0">
 							<i className="bi bi-people-fill text-muted icon-right-margin"></i>
@@ -111,27 +144,28 @@ function Reservation({ reservation }) {
 					</div>
 				</div>
 				<div className="card-footer bg-transparent px-0 pb-0">
-					<div className="d-flex">
-						{status.toLowerCase() === "booked" ? (
+					{status.toLowerCase() === "booked" ? (
+						<div className="d-flex align-items-center">
 							<a
 								href={`/reservations/${reservation_id}/seat`}
 								className="btn btn-sm btn-success me-2">
 								Seat
 							</a>
-						) : null}
-						{status.toLowerCase() === "booked" ? (
 							<a href={`/reservations/${reservation_id}/edit`} className="btn btn-sm btn-secondary">
 								Edit
 							</a>
-						) : null}
-						<button
-							data-reservation-id-cancel={reservation_id}
-							type="button"
-							className="btn btn-sm btn-danger ms-auto"
-							onClick={handleCancel}>
-							<i className="bi bi-x-lg"></i>
-						</button>
-					</div>
+							<button
+								data-reservation-id-cancel={reservation_id}
+								type="button"
+								className="btn btn-sm btn-danger ms-auto"
+								onClick={handleCancel}>
+								<i className="bi bi-x-lg"></i>
+							</button>
+						</div>
+					) : null}
+					{getTableSeatedAt() ? (
+						<p className="card-text text-center">{`Seated at ${tableSeatedAt}`}</p>
+					) : null}
 				</div>
 			</div>
 		</div>

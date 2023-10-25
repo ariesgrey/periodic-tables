@@ -43,9 +43,9 @@ function Menu() {
 					<li className="nav-item my-2" aria-current={isActive("/dashboard")}>
 						<Link className="nav-link text-light" to="/dashboard">
 							{isActive("/dashboard") ? (
-								<i className="bi bi-grid-1x2-fill icon-right-margin"></i>
+								<i className="bi bi-grid-1x2-fill navbar-icon icon-right-margin"></i>
 							) : (
-								<i className="bi bi-grid-1x2 icon-right-margin"></i>
+								<i className="bi bi-grid-1x2 navbar-icon icon-right-margin"></i>
 							)}
 							{screenWidth < 768 ? null : "Dashboard"}
 						</Link>
@@ -53,9 +53,9 @@ function Menu() {
 					<li className="nav-item my-2" aria-current={isActive("/search")}>
 						<Link className="nav-link text-light" to="/search">
 							{isActive("/search") ? (
-								<i className="bi bi-search-heart-fill icon-right-margin"></i>
+								<i className="bi bi-search-heart-fill navbar-icon icon-right-margin"></i>
 							) : (
-								<i className="bi bi-search icon-right-margin"></i>
+								<i className="bi bi-search navbar-icon icon-right-margin"></i>
 							)}
 							{screenWidth < 768 ? null : "Search"}
 						</Link>
@@ -63,9 +63,9 @@ function Menu() {
 					<li className="nav-item my-2" aria-current={isActive("/reservations/new")}>
 						<Link className="nav-link text-light" to="/reservations/new">
 							{isActive("/reservations/new") ? (
-								<i className="bi bi-calendar-plus-fill icon-right-margin"></i>
+								<i className="bi bi-calendar-plus-fill navbar-icon icon-right-margin"></i>
 							) : (
-								<i className="bi bi-calendar-plus icon-right-margin"></i>
+								<i className="bi bi-calendar-plus navbar-icon icon-right-margin"></i>
 							)}
 							{screenWidth < 768 ? null : "New Reservation"}
 						</Link>
@@ -73,9 +73,9 @@ function Menu() {
 					<li className="nav-item my-2" aria-current={isActive("/tables/new")}>
 						<Link className="nav-link text-light" to="/tables/new">
 							{isActive("/tables/new") ? (
-								<i className="bi bi-plus-square-fill icon-right-margin"></i>
+								<i className="bi bi-plus-square-fill navbar-icon icon-right-margin"></i>
 							) : (
-								<i className="bi bi-plus-square-dotted icon-right-margin"></i>
+								<i className="bi bi-plus-square-dotted navbar-icon icon-right-margin"></i>
 							)}
 							{screenWidth < 768 ? null : "New Table"}
 						</Link>

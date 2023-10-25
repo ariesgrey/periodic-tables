@@ -27,7 +27,7 @@ function Seat() {
 				const reservationData = await readReservation(reservation_id, abortController.signal);
 				const tableList = await listTables(abortController.signal);
 				// Filter out occupied tables
-				const freeTables = tableList.filter((table) => table.status === "Free");
+				const freeTables = tableList.filter((table) => table.status.toLowerCase() === "free");
 
 				setReservation(reservationData);
 				setTables(freeTables);

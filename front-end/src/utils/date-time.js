@@ -43,10 +43,22 @@ export function formatAsTime(timeString) {
 /**
  * Today's date as YYYY-MM-DD.
  * @returns {*}
- *  the today's date formatted as YYYY-MM-DD
+ *  today's date formatted as YYYY-MM-DD
  */
 export function today() {
 	return asDateString(new Date());
+}
+
+/**
+ * Current date and time in ISO-8601 format, more accurate than 'today()'.
+ * @returns {*}
+ *  current date and time in ISO-8601 format
+ */
+export function currentDateTime() {
+	const now = new Date();
+	// Accomodate for daylight savings
+	now.setTime(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+	return now.toISOString();
 }
 
 /**

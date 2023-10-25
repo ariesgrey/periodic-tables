@@ -1,6 +1,8 @@
 import React from "react";
 import Reservation from "./Reservation";
 
+import "../App.css";
+
 function ReservationList({ reservations }) {
 	const list = reservations.map((reservation) => {
 		return (
@@ -10,7 +12,15 @@ function ReservationList({ reservations }) {
 		);
 	});
 
-	return <div className="row">{list}</div>;
+	return (
+		<div className="row">
+			{reservations.length > 0 ? (
+				list
+			) : (
+				<h3 className="header-font fw-bold text-center my-5">No Active Reservations</h3>
+			)}
+		</div>
+	);
 }
 
 export default ReservationList;

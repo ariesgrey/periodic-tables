@@ -41,7 +41,7 @@ async function dateOrPhoneQuery(req, res, next) {
 	} else {
 		// If no date query, default to current date
 		if (!date) {
-			date = new Date(Date.now());
+			date = new Date();
 			// Accomodate for daylight savings
 			date.setTime(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
 		}

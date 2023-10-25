@@ -22,7 +22,8 @@ function Dashboard({ date }) {
 		date = dateQuery;
 	}
 
-	const dateString = new Date(date).toDateString();
+	// Change YYYY-MM-DD to YYYY/MM/DD for date object to be correct
+	const dateString = new Date(date.replace(/-/g, "/")).toDateString();
 
 	const [reservations, setReservations] = useState([]);
 	const [tables, setTables] = useState([]);
@@ -66,7 +67,7 @@ function Dashboard({ date }) {
 
 	return (
 		<main>
-			<div className="container ms-2 mt-3 pt-2">
+			<div className="container ms-1 mt-3 pt-2">
 				<div className="row">
 					<div className="col text-center">
 						<h3 className="sub-header-font fw-bold">{dateString}</h3>
@@ -91,11 +92,6 @@ function Dashboard({ date }) {
 				<div className="row my-4">
 					<div className="col">
 						<ReservationList reservations={reservations} />
-					</div>
-				</div>
-				<div className="row">
-					<div className="col">
-						<h4>Tables</h4>
 					</div>
 				</div>
 				<div className="row">
