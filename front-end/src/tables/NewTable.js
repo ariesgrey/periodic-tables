@@ -4,6 +4,8 @@ import { createTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import TableForm from "./TableForm";
 
+import "../App.css";
+
 function NewTable() {
 	// State set-up for TableForm
 	const initialFormData = {
@@ -42,10 +44,13 @@ function NewTable() {
 	};
 
 	return (
-		<>
-			<ErrorAlert error={newTableError} />
-			<TableForm formData={formData} handleChange={handleChange} handleSubmit={handleSubmit} />
-		</>
+		<div className="container ms-1">
+			<h1 className="header-font fw-bold text-center my-4">Add New Table</h1>
+			<fieldset className="border rounded bg-secondary-subtle form-fieldset">
+				<ErrorAlert error={newTableError} />
+				<TableForm formData={formData} handleChange={handleChange} handleSubmit={handleSubmit} />
+			</fieldset>
+		</div>
 	);
 }
 

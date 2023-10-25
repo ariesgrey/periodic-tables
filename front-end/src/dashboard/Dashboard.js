@@ -71,10 +71,10 @@ function Dashboard({ date }) {
 				<div className="row">
 					<div className="col text-center">
 						<p className="h3 sub-header-font fw-bold mb-1">Reservations for</p>
-						<h2 className="sub-header-font fw-bold">{dateString}</h2>
+						<h1 className="sub-header-font fw-bold">{dateString}</h1>
 						<Link to={`/dashboard?date=${previous(date)}`}>
 							<button className="btn btn-secondary btn-sm mx-1" type="button">
-								Prev
+								<i className="bi bi-chevron-double-left"></i>
 							</button>
 						</Link>
 						<Link to={`/dashboard?date=${today()}`}>
@@ -84,7 +84,7 @@ function Dashboard({ date }) {
 						</Link>
 						<Link to={`/dashboard?date=${next(date)}`}>
 							<button className="btn btn-secondary btn-sm mx-1" type="button">
-								Next
+								<i className="bi bi-chevron-double-right"></i>
 							</button>
 						</Link>
 					</div>

@@ -4,6 +4,8 @@ import { readReservation, updateReservation, createReservation } from "../utils/
 import ErrorAlert from "../layout/ErrorAlert";
 import { formatAsDate, formatAsTime } from "../utils/date-time";
 
+import "../App.css";
+
 function ReservationForm({ reservation_id }) {
 	// State set-up for form - start with empty form for new reservation
 	const initialFormData = {
@@ -125,9 +127,9 @@ function ReservationForm({ reservation_id }) {
 	};
 
 	return (
-		<fieldset className="border rounded bg-secondary-subtle reservation-form-fieldset">
+		<fieldset className="border rounded bg-secondary-subtle form-fieldset">
 			<ErrorAlert error={reservationFormError} />
-			<form className="reservation-form sub-header-font" onSubmit={handleSubmit}>
+			<form className="form-main sub-header-font" onSubmit={handleSubmit}>
 				<div className="row">
 					<label htmlFor="first_name" className="col-12 col-md-2 col-form-label col-form-label-lg">
 						First Name

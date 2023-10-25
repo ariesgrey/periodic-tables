@@ -13,7 +13,7 @@ function ReservationList({ reservations }) {
 	});
 
 	return (
-		<div className="row">
+		<div className="row mb-2">
 			{reservations.length > 0 ? (
 				list
 			) : (
