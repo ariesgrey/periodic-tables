@@ -5,6 +5,13 @@ import { formatAsTime } from "../utils/date-time";
 import ErrorAlert from "../layout/ErrorAlert";
 
 import "../App.css";
+import {
+	CancelIcon,
+	EditIcon,
+	ReservationPeopleIcon,
+	ReservationStatusIcon,
+	ReservationTimeIcon,
+} from "../icons/Icons";
 
 function Reservation({ reservation }) {
 	const {
@@ -122,49 +129,56 @@ function Reservation({ reservation }) {
 				<div className="row pb-1">
 					<div className="col-6">
 						<h5 className="card-title fw-bold text-truncate">{`${last_name}, ${first_name}`}</h5>
-						<h6 className="card-subtitle">{mobile_number}</h6>
-						<small className="id text-muted fst-italic">{`ID: ${reservation_id}`}</small>
+						<h6 className="card-subtitle mb-2">{mobile_number}</h6>
+						<p className="id text-muted m-0 pt-1">{`ID: ${reservation_id}`}</p>
 					</div>
 					<div className="col-6 d-flex flex-column">
-						<p className="card-text m-0">
-							<i className="bi bi-clock-fill text-muted icon-right-margin"></i>
+						<p className="card-text card-col2-margin" title="Reservation Time">
+							<ReservationTimeIcon />
 							{formattedTime}
 							{isDue ? <span className="badge text-bg-warning ms-2">Due</span> : null}
 						</p>
-						<p className="card-text m-0">
-							<i className="bi bi-people-fill text-muted icon-right-margin"></i>
+						<p className="card-text card-col2-margin" title="Party Size">
+							<ReservationPeopleIcon />
 							{people}
 						</p>
 						<p
 							data-reservation-id-status={reservation_id}
-							className={`card-text text-capitalize fw-bold ${statusColor} m-0`}>
-							<i className="bi bi-bar-chart-fill text-muted icon-right-margin"></i>
+							className={`card-text text-capitalize fw-bold ${statusColor} m-0`}
+							title="Status">
+							<ReservationStatusIcon status={status} />
 							{status}
 						</p>
 					</div>
 				</div>
-				<div className="card-footer bg-transparent px-0 pb-0">
+				<div className="card-footer bg-transparent p-0">
 					{status.toLowerCase() === "booked" ? (
-						<div className="d-flex align-items-center">
+						<div className="d-flex align-items-center pt-2">
+							<a
+								href={`/reservations/${reservation_id}/edit`}
+								className="btn btn-sm btn-secondary me-auto"
+								title="Edit">
+								<EditIcon />
+							</a>
 							<a
 								href={`/reservations/${reservation_id}/seat`}
-								className="btn btn-sm btn-success me-2">
+								className="btn btn-success py-1 px-2 fw-bold">
 								Seat
-							</a>
-							<a href={`/reservations/${reservation_id}/edit`} className="btn btn-sm btn-secondary">
-								Edit
 							</a>
 							<button
 								data-reservation-id-cancel={reservation_id}
 								type="button"
-								className="btn btn-sm btn-danger ms-auto"
+								className="btn btn-sm btn-danger ms-2"
+								title="Cancel"
 								onClick={handleCancel}>
-								<i className="bi bi-x-lg"></i>
+								<CancelIcon />
 							</button>
 						</div>
 					) : null}
 					{getTableSeatedAt() ? (
-						<p className="card-text text-center">{`Seated at ${tableSeatedAt}`}</p>
+						<div className="d-flex align-items-center justify-content-center pt-1">
+							<p className="card-text seated-text text-center pt-2">{`Seated at ${tableSeatedAt}`}</p>
+						</div>
 					) : null}
 				</div>
 			</div>

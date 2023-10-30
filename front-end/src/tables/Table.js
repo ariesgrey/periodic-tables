@@ -3,6 +3,7 @@ import { finishTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 import "../App.css";
+import { TableCapacityIcon, TableStatusIcon } from "../icons/Icons";
 
 function Table({ table }) {
 	const [finishError, setFinishError] = useState(null);
@@ -28,9 +29,9 @@ function Table({ table }) {
 	// Color coding based on status
 	const setStatusColor = () => {
 		if (status.toLowerCase() === "free") {
-			return "text-primary"; // or success?
+			return "text-primary";
 		} else if (status.toLowerCase() === "occupied") {
-			return "text-secondary"; // or dark?
+			return "text-success";
 		}
 	};
 	const statusColor = setStatusColor();
@@ -39,32 +40,33 @@ function Table({ table }) {
 		<div className="card table-card main-font shadow-sm mb-3">
 			<ErrorAlert error={finishError} />
 			<div className="card-body p-2">
-				<div className="row">
-					<div className="col-4 col-md-6">
+				<div className="row pb-1">
+					<div className="col-5 col-md-6">
 						<h5 className="card-title fw-bold mb-1">{table_name}</h5>
-						<small className="id text-muted fst-italic">{`ID: ${table_id}`}</small>
+						<p className="id text-muted m-0">{`ID: ${table_id}`}</p>
 					</div>
-					<div className="col-8 col-md-6 d-flex flex-column">
-						<p className="card-text mx-0 mb-1">
-							<i className="bi bi-person-bounding-box text-muted icon-right-margin"></i>
+					<div className="col-7 col-md-6 d-flex flex-column">
+						<p className="card-text card-col2-margin" title="Capacity">
+							<TableCapacityIcon />
 							{capacity}
 						</p>
 						<p
 							data-table-id-status={table_id}
-							className={`card-text m-0 text-capitalize fw-bold ${statusColor}`}>
-							<i className="bi bi-bar-chart-fill text-muted icon-right-margin"></i>
+							className={`card-text m-0 text-capitalize fw-bold ${statusColor}`}
+							title="Status">
+							<TableStatusIcon status={status} />
 							{status}
 						</p>
 					</div>
 				</div>
-				<div className="card-footer bg-transparent px-0 pb-0">
+				<div className="card-footer bg-transparent p-0">
 					{status.toLowerCase() === "occupied" ? (
-						<div className="d-flex align-items-center">
-							<p className="card-text m-0">{`Reservation: ${reservation_id}`}</p>
+						<div className="d-flex align-items-center pt-2">
+							<p className="card-text m-0 p-0">{`Occupied by #${reservation_id}`}</p>
 							<button
 								data-table-id-finish={table_id}
 								type="button"
-								className="btn btn-sm btn-danger ms-auto"
+								className="btn btn-dark ms-auto py-1 px-2 fw-bold"
 								onClick={handleFinish}>
 								Finish
 							</button>

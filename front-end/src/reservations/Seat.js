@@ -3,6 +3,8 @@ import { useHistory, useParams } from "react-router-dom";
 import { readReservation, listTables, seatReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
+import "../App.css";
+
 function Seat() {
 	// Form state set-up
 	const initialFormData = {
@@ -86,35 +88,45 @@ function Seat() {
 	};
 
 	return (
-		<>
-			<ErrorAlert error={seatError} />
-			<form onSubmit={handleSubmit}>
-				<div className="form-group">
-					<label htmlFor="table_id">Select Table</label>
-					<select
-						className="form-control"
-						id="table_id"
-						name="table_id"
-						value={formData.table_id}
-						onChange={handleChange}>
-						<option value="">-- Select a Table --</option>
-						{tables.map((table) => (
-							<option key={table.table_id} value={table.table_id}>
-								{table.table_name} - {table.capacity}
-							</option>
-						))}
-					</select>
-				</div>
-				<div>
-					<button className="btn btn-primary" type="submit">
-						Submit
-					</button>
-					<button className="btn btn-secondary" type="button" onClick={() => history.goBack()}>
-						Cancel
-					</button>
-				</div>
-			</form>
-		</>
+		<div className="container ms-1">
+			<h1 className="header-font fw-bold text-center my-4">Seat Reservation #{reservation_id}</h1>
+			<fieldset className="border rounded bg-secondary-subtle form-fieldset mb-5">
+				<ErrorAlert error={seatError} />
+				<form className="form-main sub-header-font" onSubmit={handleSubmit}>
+					<div className="row">
+						<label htmlFor="table_id" className="col-12 col-md-2 col-form-label col-form-label-lg">
+							Select Table
+						</label>
+						<div className="col-12 col-md-10">
+							<select
+								className="form-select form-select-lg form-item"
+								id="table_id"
+								name="table_id"
+								value={formData.table_id}
+								onChange={handleChange}>
+								<option value="">-- Select a Table --</option>
+								{tables.map((table) => (
+									<option key={table.table_id} value={table.table_id}>
+										{table.table_name} - {table.capacity}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+					<div className="d-flex justify-content-between">
+						<button
+							className="btn btn-lg btn-secondary"
+							type="button"
+							onClick={() => history.goBack()}>
+							Cancel
+						</button>
+						<button className="btn btn-lg btn-primary" type="submit">
+							Submit
+						</button>
+					</div>
+				</form>
+			</fieldset>
+		</div>
 	);
 }
 

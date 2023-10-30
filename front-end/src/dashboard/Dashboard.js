@@ -8,6 +8,7 @@ import ReservationList from "../reservations/ReservationList";
 import TableList from "../tables/TableList";
 
 import "../App.css";
+import { NextIcon, PreviousIcon } from "../icons/Icons";
 
 /**
  * Defines the dashboard page.
@@ -73,18 +74,18 @@ function Dashboard({ date }) {
 						<p className="h3 sub-header-font fw-bold mb-1">Reservations for</p>
 						<h1 className="sub-header-font fw-bold">{dateString}</h1>
 						<Link to={`/dashboard?date=${previous(date)}`}>
-							<button className="btn btn-secondary btn-sm mx-1" type="button">
-								<i className="bi bi-chevron-double-left"></i>
+							<button className="btn btn-secondary btn-sm me-1" type="button">
+								<PreviousIcon />
 							</button>
 						</Link>
 						<Link to={`/dashboard?date=${today()}`}>
-							<button className="btn btn-secondary btn-sm mx-1" type="button">
+							<button className="btn btn-secondary btn-sm mx-1 main-font" type="button">
 								Today
 							</button>
 						</Link>
 						<Link to={`/dashboard?date=${next(date)}`}>
-							<button className="btn btn-secondary btn-sm mx-1" type="button">
-								<i className="bi bi-chevron-double-right"></i>
+							<button className="btn btn-secondary btn-sm ms-1" type="button">
+								<NextIcon />
 							</button>
 						</Link>
 					</div>

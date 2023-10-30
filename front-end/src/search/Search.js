@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { searchByPhone } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
+import ReservationList from "../reservations/ReservationList";
 
 import "../App.css";
-import ReservationList from "../reservations/ReservationList";
+import { SearchButtonIcon } from "../icons/Icons";
 
 function Search() {
 	// State set-up for form
@@ -66,7 +67,7 @@ function Search() {
 							</div>
 						</div>
 						<button className="btn btn-lg btn-primary search-button col-2 col-md-1" type="submit">
-							<i className="bi bi-search"></i>
+							<SearchButtonIcon />
 						</button>
 					</div>
 				</form>
