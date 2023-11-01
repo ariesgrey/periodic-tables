@@ -151,7 +151,7 @@ function Reservation({ reservation }) {
 						</p>
 					</div>
 				</div>
-				<div className="card-footer bg-transparent p-0">
+				<div className="card-footer footer-height bg-transparent p-0">
 					{status.toLowerCase() === "booked" ? (
 						<div className="d-flex align-items-center pt-2">
 							<a
@@ -162,8 +162,8 @@ function Reservation({ reservation }) {
 							</a>
 							<a
 								href={`/reservations/${reservation_id}/seat`}
-								className="btn btn-success py-1 px-2 fw-bold">
-								Seat
+								className="btn btn-sm btn-success py-1 px-2 fw-bold">
+								<p className="fs-6 m-0">Seat</p>
 							</a>
 							<button
 								data-reservation-id-cancel={reservation_id}
@@ -176,7 +176,7 @@ function Reservation({ reservation }) {
 						</div>
 					) : null}
 					{getTableSeatedAt() ? (
-						<div className="d-flex align-items-center justify-content-center pt-1">
+						<div className="d-flex align-items-center justify-content-center py-1">
 							<p className="card-text seated-text text-center pt-2">{`Seated at ${tableSeatedAt}`}</p>
 						</div>
 					) : null}

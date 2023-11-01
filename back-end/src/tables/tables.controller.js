@@ -165,16 +165,10 @@ async function list(req, res) {
 	res.json({ data: await service.list() });
 }
 
-// POST /tables/new - creates new table
+// POST /tables - creates new table
 async function create(req, res) {
 	const table = await service.create(req.body.data);
 	res.status(201).json({ data: table });
-}
-
-// GET /tables/:reservation_id - returns table with given `reservation_id`
-async function read(req, res) {
-	const { reservation_id } = res.locals.reservation;
-	res.json({ data: await service.readByReservation(reservation_id) });
 }
 
 // PUT /tables/:table_id/seat - seats a reservation at a table
@@ -215,6 +209,12 @@ async function finish(req, res) {
 	await reservationsService.update(updatedReservationData);
 
 	res.json({ data: updatedTable });
+}
+
+// GET /tables/seated/:reservation_id - returns table with given `reservation_id`
+async function read(req, res) {
+	const { reservation_id } = res.locals.reservation;
+	res.json({ data: await service.readByReservation(reservation_id) });
 }
 
 module.exports = {

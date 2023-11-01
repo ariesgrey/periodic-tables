@@ -270,7 +270,7 @@ module.exports = {
 	read: [asyncErrorBoundary(reservationExists), read],
 	updateStatus: [
 		hasProperties(["status"]),
-		hasOnlyValidProperties(["status"]), // Double check this
+		hasOnlyValidProperties(["status"]),
 		asyncErrorBoundary(reservationExists),
 		statusIsValid,
 		statusIsNotFinished,

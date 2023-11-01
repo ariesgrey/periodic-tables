@@ -59,7 +59,7 @@ function Table({ table }) {
 						</p>
 					</div>
 				</div>
-				<div className="card-footer bg-transparent p-0">
+				<div className="card-footer footer-height bg-transparent p-0">
 					{status.toLowerCase() === "occupied" ? (
 						<div className="d-flex align-items-center pt-2">
 							<p className="card-text m-0 p-0">{`Occupied by #${reservation_id}`}</p>
@@ -68,7 +68,7 @@ function Table({ table }) {
 								type="button"
 								className="btn btn-dark ms-auto py-1 px-2 fw-bold"
 								onClick={handleFinish}>
-								Finish
+								<p className="fs-6 m-0">Finish</p>
 							</button>
 						</div>
 					) : null}

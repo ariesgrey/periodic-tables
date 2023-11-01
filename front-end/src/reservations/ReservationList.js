@@ -6,7 +6,7 @@ import "../App.css";
 function ReservationList({ reservations }) {
 	const list = reservations.map((reservation) => {
 		return (
-			<div className="col col-md-4" key={reservation.reservation_id}>
+			<div className="col-12 col-md-6 col-xl-4" key={reservation.reservation_id}>
 				<Reservation reservation={reservation} />
 			</div>
 		);

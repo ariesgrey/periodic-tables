@@ -1,56 +1,7 @@
 /* --- Media Queries --- */
 
-/* For smaller screens */
-@media screen and (max-width: 767.98px) {
-  /* Navbar - on top */
-  .navbar-nav {
-    flex-direction: row !important;
-  }
-
-  nav svg {
-    display: inline-block;
-    vertical-align: top;
-    width: 44px;
-    height: 26px;
-    margin-left: 16px;
-    padding-right: 15px;
-  }
-
-  [aria-current]:not([aria-current="false"]) {
-    background-color: #495057;
-  }
-
-  .col-12 {
-    padding-right: 21px;
-  }
-
-  /* ReservationForm + TableForm + Search + Seat */
-  .form-fieldset {
-    margin: 20px 0px;
-  }
-
-  .form-main {
-    padding: 10px 20px;
-  }
-
-  .form-item {
-    margin-bottom: 20px;
-  }
-
-  .search-button {
-    height: 48px;
-  }
-
-  /* Seat Reservation */
-  fieldset .reservation-card {
-    width: 100%;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-}
-
 /* For bigger screens */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) { 
   /* Navbar - on left */
   .navbar {
     width: 220px;
@@ -106,6 +57,62 @@
    }
 }
 
+/* Fix menu overlap on 'large' size screens */
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+  .main-container-padding {
+    padding-left: 2.5em;
+  }
+}
+
+/* For smaller screens */
+@media screen and (max-width: 991.98px) {
+  /* Navbar - on top */
+  .navbar-nav {
+    flex-direction: row !important;
+  }
+
+  nav svg {
+    display: inline-block;
+    vertical-align: top;
+    width: 44px;
+    height: 26px;
+    margin-left: 16px;
+    padding-right: 15px;
+  }
+
+  [aria-current]:not([aria-current="false"]) {
+    background-color: #495057;
+  }
+
+  .col-12 {
+    padding-right: 21px;
+  }
+
+  /* ReservationForm + TableForm + Search + Seat */
+  .form-fieldset {
+    margin: 20px 0px;
+  }
+
+  .form-main {
+    padding: 10px 20px;
+  }
+
+  .form-item {
+    margin-bottom: 20px;
+  }
+
+  .search-button {
+    height: 48px;
+  }
+
+  /* Seat Reservation */
+  fieldset .reservation-card {
+    width: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
 /* --- Navbar Styling --- */
 
 .navbar-brand {
@@ -121,9 +128,7 @@
 /* --- Reservation + Table Styling --- */
 
 .reservation-card {
-  height: 140px;
-
-  .card-title {
+ .card-title {
     font-size: 1.15em;
   }
 
@@ -145,17 +150,20 @@
   }
 
   .btn-sm {
-    padding: 1px 3px;
+    padding: 0.07em 0.2em;
+  }
+
+  /* Maintains consistent footer height */
+  .footer-height {
+    height: 2.55rem;
   }
 
   .seated-text {
     font-size: 1.1em;
-  }
+  }  
 }
 
 .table-card {
-  height: 115px;
-
   .card-title {
     font-size: 1.15em;
   }
@@ -176,6 +184,11 @@
   .card-icon {
     margin-right: 3px;
     margin-bottom: 3px;
+  }
+
+  /* Maintains consistent footer height */
+  .footer-height {
+    height: 2.55rem;
   }
 }
 

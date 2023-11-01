@@ -13,10 +13,10 @@ function Layout() {
 	return (
 		<div className="container-fluid">
 			<div className="row">
-				<div className="col-md-2 px-0">
+				<div className="col-12 col-lg-2 px-0">
 					<Menu />
 				</div>
-				<div className="col-12 col-md-10">
+				<div className="col-12 col-lg-10 main-container-padding">
 					<Routes />
 				</div>
 			</div>
